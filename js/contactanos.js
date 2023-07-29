@@ -1,77 +1,78 @@
-//Declaramos variables// mandamos llamar a los elementos
-let nombre = document.getElementById('nombre');
-let email = document.getElementById('email');
-let telefono = document.getElementById('telefono');
-let mensaje  = document.getElementById('mensaje');
-
-let btnSubmit = document.getElementsByClassName('btnSubmit');
-let esValidoEmail = true;
-
-
-//validación
-const formulario = document.getElementById('formulario');
-const inputs = document.querySelectorAll('#formulario input');
-
-const expresiones = {
-	nombre: /^[a-zA-ZÀ-ÿ\s]{3,15}$/, // Letras y espacios, pueden llevar acentos.
-	correo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-	telefono: /^\d{10,14}$/ // 10 a 14 numeros.
+function revisar(elemento){
+	if(elemento.value==''){
+		elemento.className='error';
+	}else{
+		elemento.className='input';
+	}
 }
 
-const campos = {
-	nombre: false,
-	correo: false,
-	telefono: false
+function revisaNumero(elemento){
+	if(elemento.value!==''){
+		var data = elemento.value;
+		if(isNaN(data)){
+			elemento.className='error';
+		}else{
+			elemento.className='input';
+		}
+	}
 }
 
-const validarFormulario = (e) => {
-	switch (e.target.name) {
-		
-		case "nombre":
-			validarCampo(expresiones.nombre, e.target, 'nombre');
-		break;
+function revisaLongitud(elemento, min){
+	if(elemento.value!==''){ 
+		var data = elemento.value;
+		if(data.length<min){
+			elemento.className='error';
+		}else{
+			elemento.className='input';
+		}
+	}
+}
+
+function revisarEmail(elemento){
+	if(elemento.value!==''){
+		var data = elemento.value;
+		var exp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		if(!exp.test(data)){
+			elemento.className='error';
+		}else{
+			elemento.className='input';
+		}	
+	}
+}
+
+function validar(){
+	var datosCorrectos=true;
+	var error="";
+	if(document.getElementById("nombre").value==""){
+		datosCorrectos=false;
+		error="\n El Nombre Esta Vacio";
+	}
 	
-		case "correo":
-			validarCampo(expresiones.correo, e.target, 'correo');
-		break;
-		case "telefono":
-			validarCampo(expresiones.telefono, e.target, 'telefono');
-		break;
+	if(document.getElementById("telefono").value==""){
+		datosCorrectos=false;
+		error="\n Debes Poner Un Tenelefono";
 	}
-}
-
-const validarCampo = (expresion, input, campo) => {
-	if(expresion.test(input.value)){
-		document.getElementById(`grupo__${campo}`).classList.remove('formulario__grupo-incorrecto');
-		document.getElementById(`grupo__${campo}`).classList.add('formulario__grupo-correcto');
-		document.querySelector(`#grupo__${campo} i`).classList.add('fa-check-circle');
-		document.querySelector(`#grupo__${campo} i`).classList.remove('fa-times-circle');
-		document.querySelector(`#grupo__${campo} .formulario__input-error`).classList.remove('formulario__input-error-activo');
-		campos[campo] = true;
-	} else {
-		document.getElementById(`grupo__${campo}`).classList.add('formulario__grupo-incorrecto');
-		document.getElementById(`grupo__${campo}`).classList.remove('formulario__grupo-correcto');
-		document.querySelector(`#grupo__${campo} i`).classList.add('fa-times-circle');
-		document.querySelector(`#grupo__${campo} i`).classList.remove('fa-check-circle');
-		document.querySelector(`#grupo__${campo} .formulario__input-error`).classList.add('formulario__input-error-activo');
-		campos[campo] = false;
+	
+	if(isNaN(document.getElementById("telefono").value)){
+		datosCorrectos=false;
+		error="\n El Telefono Solo Debe Tener Numeros";
 	}
+	
+	var exp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if(!exp.test(document.getElementById("email").value)){
+		datosCorrectos=false;
+		error="\n Email Invalido";
+	}
+	
+	if(document.getElementById("mensaje").value.length<30){
+		datosCorrectos=false;
+		error="\n El Mensaje Debe Ser Mayor A 30 Caracteres";
+	}
+	
+	if(!datosCorrectos){
+		alert('Hay Errores En El formulario'+error);
+	}
+	
+	return datosCorrectos;
+	
 }
-
-inputs.forEach((input) => {
-	input.addEventListener('keyup', validarFormulario);
-	input.addEventListener('blur', validarFormulario);
-});
-
-formulario.addEventListener('submit', (e) => {
-	e.preventDefault();
-
-		document.getElementById('formulario__mensaje-exito').classList.add('formulario__mensaje-exito-activo');
-		setTimeout(() => {
-			document.getElementById('formulario__mensaje-exito').classList.remove('formulario__mensaje-exito-activo');
-		}, 5000);
-
-		document.querySelectorAll('.formulario__grupo-correcto').forEach((icono) => {
-			icono.classList.remove('formulario__grupo-correcto');
-		});
-});
